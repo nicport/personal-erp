@@ -9,14 +9,27 @@ const port = 5000;
 app.use(cors());
 app.use(express.json());
 
-// Create transactions table if not exists
-db.run(`CREATE TABLE IF NOT EXISTS transactions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  description TEXT,
-  amount REAL,
-  type TEXT
-);`);
+db.run(`DROP TABLE IF EXISTS transactions`, (err) => {
+  if (err) {
+    // Handle error
+    console.error(err.message);
+    return;
+  }
 
+  // Create transactions table if not exists
+  db.run(`CREATE TABLE IF NOT EXISTS transactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date DATE,
+    description TEXT,
+    amount REAL,
+    type TEXT
+  );`, (err) => {
+    if (err) {
+      // Handle error
+      console.error(err.message);
+    }
+  });
+});
 /*
 app.get("/api/transactions", (req, res) => {
   // Normally this data would come from the database

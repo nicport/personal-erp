@@ -27,13 +27,33 @@ router.get('/:id', (req, res) => {
 // POST a new transaction
 router.post('/', (req, res) => {
   const { description, amount, type } = req.body;
-  const sql = `INSERT INTO transactions (description, amount, type) VALUES (?, ?, ?)`;
+  const sql = `INSERT INTO transactions (date, description, amount, type) VALUES (?, ?, ?)`;
   db.run(sql, [description, amount, type], function (err) {
     if (err) {
       throw err;
     }
     res.json({ id: this.lastID });
   });
+});
+
+// POST bulk transactions
+router.post('/bulk', (req, res) => {
+  const transactions = req.body.transactions;
+  const sql = "INSERT INTO transactions (date, description, amount) VALUES (?, ?, ?)";
+  
+  db.serialize(() => {
+    db.run("BEGIN TRANSACTION");
+    const stmt = db.prepare(sql);
+
+    transactions.forEach(([date, description, amount]) => {
+      stmt.run([date, description, amount]);
+    });
+
+    stmt.finalize();
+    db.run("COMMIT");
+  });
+
+  res.json({ message: "Bulk transactions inserted successfully!" });
 });
 
 // PUT (update) a transaction
