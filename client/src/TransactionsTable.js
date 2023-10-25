@@ -1,37 +1,40 @@
 import React, { useEffect } from 'react';
-import $ from 'jquery';
-import 'datatables.net-dt/css/jquery.dataTables.css';
-import 'datatables.net';
+import { useTable } from 'react-table';
 
-const TransactionsTable = ({ transactions }) => {
-  useEffect(() => {
-    $('#dataTable').DataTable();
-  }, []);
+function TransactionsTable({ data, columns }) {
+  const {
+      getTableProps,
+      getTableBodyProps,
+      headerGroups,
+      rows,
+      prepareRow,
+  } = useTable({ columns, data });
 
   return (
-    <div className='datatable-container'>
-      <table id="dataTable" className="display">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Amount</th>
-            <th>Type</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((transaction, index) => (
-            <tr key={index}>
-              <td>{transaction.date}</td>
-              <td>{transaction.description}</td>
-              <td>{transaction.amount}</td>
-              <td>{transaction.type}</td>
-            </tr>
-          ))}
-        </tbody>
+      <table {...getTableProps()}>
+          <thead>
+              {headerGroups.map(headerGroup => (
+                  <tr {...headerGroup.getHeaderGroupProps()}>
+                      {headerGroup.headers.map(column => (
+                          <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+                      ))}
+                  </tr>
+              ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+              {rows.map(row => {
+                  prepareRow(row);
+                  return (
+                      <tr {...row.getRowProps()}>
+                          {row.cells.map(cell => (
+                              <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                          ))}
+                      </tr>
+                  );
+              })}
+          </tbody>
       </table>
-    </div>
   );
-};
+}
 
 export default TransactionsTable;
