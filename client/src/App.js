@@ -39,10 +39,12 @@ const App = () => {
   }, []);
 
   return (
-    <div className='table'>
-      {error && <p>Error: {error}</p>} {/* display error message to user */}
+    <div>
       <CSVUpload />
-      <TransactionsTable data={transactions} columns={columns} />
+      <div className='table'>
+        {error && <p>Error: {error}</p>} {/* display error message to user */}
+        <TransactionsTable data={transactions} columns={columns} />
+      </div>
     </div>
   );
 };
