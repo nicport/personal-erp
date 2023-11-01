@@ -20,10 +20,43 @@ const App = () => {
         Header: 'Amount',
         accessor: 'amount',
       },
-      // ... add more columns as needed
+      {
+        Header: 'Type',
+        accessor: 'type',
+      },
     ],
     []
   );
+
+  const handleCSVData = (parsedData) => {
+    const cleanedData = parsedData.map(entry => ({
+      date: entry.Date,
+      description: entry.Name,
+      amount: entry.Amount
+    }));
+    fetch('http://localhost:5000/api/transactions/bulk', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ transactions: cleanedData })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log(data.message);
+      // Optionally, you can fetch the transactions again here
+      // or update your state with the newly added transactions.
+    })
+    .catch(error => {
+      setError(error.toString());
+      console.error('Error posting transactions:', error);
+    });
+  };
 
   useEffect(() => {
     fetch('http://localhost:5000/api/transactions')
@@ -40,7 +73,7 @@ const App = () => {
 
   return (
     <div>
-      <CSVUpload />
+      <CSVUpload onFileLoaded={handleCSVData} />
       <div className='table'>
         {error && <p>Error: {error}</p>} {/* display error message to user */}
         <TransactionsTable data={transactions} columns={columns} />
