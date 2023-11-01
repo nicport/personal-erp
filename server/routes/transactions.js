@@ -40,13 +40,13 @@ router.post('/', (req, res) => {
 router.post('/bulk', (req, res) => {
   const transactions = req.body.transactions;
   const sql = "INSERT INTO transactions (date, description, amount, type) VALUES (?, ?, ?, ?)";
-  
+
   db.serialize(() => {
     db.run("BEGIN TRANSACTION");
     const stmt = db.prepare(sql);
 
-    transactions.forEach(([date, description, amount, type]) => {
-      stmt.run([date, description, amount, type]);
+    transactions.forEach((transaction) => {
+      stmt.run([transaction.date, transaction.description, transaction.amount, null]);
     });
 
     stmt.finalize();
