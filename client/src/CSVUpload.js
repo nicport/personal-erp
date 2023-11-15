@@ -3,6 +3,8 @@ import Papa from 'papaparse';
 
 
 const CSVUpload = ({ onFileLoaded }) => {
+  const fileInputRef = React.createRef();
+  
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -19,8 +21,21 @@ const CSVUpload = ({ onFileLoaded }) => {
     reader.readAsText(file);
   };
 
+  const handleButtonClick = () => {
+    fileInputRef.current.click();
+  };
+
   return (
-    <input type="file" accept=".csv" onChange={handleFileChange} />
+    <>
+      <button className="btn-upload" onClick={handleButtonClick}>Upload CSV</button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv"
+        onChange={handleFileChange}
+        style={{ display: 'none' }} // Hide the actual input field
+      />
+    </>
   );
 };
 
