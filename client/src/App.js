@@ -2,10 +2,15 @@ import React, { useState, useEffect } from 'react';
 import TransactionsTable from './TransactionsTable';
 import CSVUpload from './CSVUpload';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
   const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState(null); // add an error state
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const transactionTypes = ["Income", "Expense", "Transfer", "Other"];
+
   const columns = React.useMemo(
     () => [
       {
@@ -23,6 +28,27 @@ const App = () => {
       {
         Header: 'Type',
         accessor: 'type',
+        Cell: ({ row, value }) => (
+          <select
+            value={value}
+            onChange={(e) => handleTypeChange(e, row.index)}
+          >
+            {transactionTypes.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+        ),
+      },
+      {
+        Header: 'Tags',
+        accessor: 'tags',
+        Cell: ({ row, value }) => (
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => handleTagsChange(e, row.index)}
+          />
+        ),
       },
     ],
     []
@@ -58,6 +84,24 @@ const App = () => {
     });
   };
 
+  const handleTypeChange = (event, rowIndex) => {
+    const newTransactions = [...transactions];
+    newTransactions[rowIndex] = {
+      ...newTransactions[rowIndex],
+      type: event.target.value,
+    };
+    setTransactions(newTransactions);
+  };
+
+  const handleTagsChange = (event, rowIndex) => {
+    const newTransactions = [...transactions];
+    newTransactions[rowIndex] = {
+      ...newTransactions[rowIndex],
+      tags: event.target.value,
+    };
+    setTransactions(newTransactions);
+  };
+
   useEffect(() => {
     fetch('http://localhost:5000/api/transactions')
       .then((res) => {
@@ -71,12 +115,29 @@ const App = () => {
       .catch((error) => setError(error.toString()));
   }, []);
 
+  const filteredTransactions = transactions.filter((transaction) => {
+    const transactionDate = new Date(transaction.date);
+    const start = startDate ? new Date(startDate) : new Date(-8640000000000000);
+    const end = endDate ? new Date(endDate) : new Date(8640000000000000);
+    return transactionDate >= start && transactionDate <= end;
+  });
+
   return (
     <div>
       <CSVUpload onFileLoaded={handleCSVData} />
+      <input
+        type="date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+      />
+      <input
+        type="date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
+      />
       <div className='table'>
         {error && <p>Error: {error}</p>} {/* display error message to user */}
-        <TransactionsTable data={transactions} columns={columns} />
+        <TransactionsTable data={filteredTransactions} columns={columns} />
       </div>
     </div>
   );

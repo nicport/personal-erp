@@ -30,3 +30,25 @@ th, td {
   padding: 15px;
   text-align: left;
 }
+
+.btn-upload {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: white;
+  color: #0056b3;
+  border: solid #0056b3;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-upload:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+.btn-upload:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+}
