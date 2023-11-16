@@ -1,12 +1,4 @@
-.datatable-container { 
-  margin: 10%;
-  padding: 1%;
-  border-radius: 10px;
-  border: solid chartreuse;
-  box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24),0 17px 50px 0 rgba(0, 0, 0, 0.19);
-  overflow: hidden;
-}
-
+/* TABLE STYLING */
 .table {
   font-family: Arial, sans-serif;
   width: 100%;
@@ -31,6 +23,12 @@ th, td {
   text-align: left;
 }
 
+/* TOOLBAR Styling - the toolbar contains the elements manipulating the data in the table  */
+.toolbar {
+  margin-left: 5%;
+}
+
+/* CSV Upload Button Styling */
 .btn-upload {
   padding: 10px 20px;
   margin: 10px;
@@ -52,3 +50,10 @@ th, td {
   outline: none;
   box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
 }
+
+/* Date Range Filter Styling */
+.date-filter {
+  margin-top: 1%;
+}
+
+
