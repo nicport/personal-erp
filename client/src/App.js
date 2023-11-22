@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TransactionsTable from './TransactionsTable';
 import CSVUpload from './CSVUpload';
+import Navbar from './components/Navbar';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -124,6 +125,7 @@ const App = () => {
 
   return (
     <div>
+      <Navbar />
       <div className='toolbar'>
         <div className='csv-upload'>
           <CSVUpload onFileLoaded={handleCSVData} />
