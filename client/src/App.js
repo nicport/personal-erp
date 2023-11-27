@@ -75,7 +75,6 @@ const App = () => {
       return response.json();
     })
     .then(data => {
-      console.log(data)
       console.log(data.message);
       setTransactions(previousTransactions => [...previousTransactions, ...cleanedData]);
       // Optionally, you can fetch the transactions again here
@@ -88,21 +87,19 @@ const App = () => {
   };
 
   const handleTypeChange = (event, rowIndex) => {
-    const newTransactions = [...transactions];
-    newTransactions[rowIndex] = {
-      ...newTransactions[rowIndex],
-      type: event.target.value,
-    };
-    setTransactions(newTransactions);
+    setTransactions(transactions =>
+      transactions.map((transaction, index) =>
+        index === rowIndex ? { ...transaction, type: event.target.value } : transaction
+      )
+    );
   };
 
   const handleTagsChange = (event, rowIndex) => {
-    const newTransactions = [...transactions];
-    newTransactions[rowIndex] = {
-      ...newTransactions[rowIndex],
-      tags: event.target.value,
-    };
-    setTransactions(newTransactions);
+    setTransactions(transactions =>
+      transactions.map((transaction, index) =>
+        index === rowIndex ? { ...transaction, tags: event.target.value } : transaction
+      )
+    );
   };
 
   useEffect(() => {
@@ -118,12 +115,17 @@ const App = () => {
       .catch((error) => setError(error.toString()));
   }, []);
 
-  const filteredTransactions = transactions.filter((transaction) => {
-    const transactionDate = new Date(transaction.date);
+  const filterTransactionsByDate = (transactions, startDate, endDate) => {
     const start = startDate ? new Date(startDate) : new Date(-8640000000000000);
     const end = endDate ? new Date(endDate) : new Date(8640000000000000);
-    return transactionDate >= start && transactionDate <= end;
-  });
+  
+    return transactions.filter(transaction => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate >= start && transactionDate <= end;
+    });
+  };
+
+  const filteredTransactions = filterTransactionsByDate(transactions, startDate, endDate);
 
   return (
     <div>
