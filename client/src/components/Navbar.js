@@ -6,8 +6,8 @@ function Navbar() {
       <h4>PersonalResourcePlanning</h4>
       <ul className='nav-links'>
         <li><a href="/">Home</a></li>
-        <li><a href='about'>About</a></li>
-        <li><a href='contact'>Contact</a></li>
+        <li><a href='about'>Tasks</a></li>
+        <li><a href='contact'>Finance</a></li>
       </ul>
     </nav>
   );
