@@ -30,17 +30,6 @@ db.run(`DROP TABLE IF EXISTS transactions`, (err) => {
     }
   });
 });
-/*
-app.get("/api/transactions", (req, res) => {
-  // Normally this data would come from the database
-  const transactions = [
-    { id: 1, description: "test", amount: -20 },
-    { id: 2, description: "test2", amount: 3000 },
-  ];
-
-  res.json(transactions);
-});
-*/
 
 app.use('/api/transactions', transactionsRoutes);
 app.use('/api/tasks', tasksRoutes);

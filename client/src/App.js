@@ -77,8 +77,6 @@ const App = () => {
     .then(data => {
       console.log(data.message);
       setTransactions(previousTransactions => [...previousTransactions, ...cleanedData]);
-      // Optionally, you can fetch the transactions again here
-      // or update your state with the newly added transactions.
     })
     .catch(error => {
       setError(error.toString());
