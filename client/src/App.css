@@ -1,3 +1,11 @@
+/* Flex box container styling */
+.main-container {
+  display: flex; /* Enables Flexbox */
+  flex-direction: row; /* Aligns children in a row */
+  align-items: start; /* Aligns items to the start of the flex container */
+}
+
+
 /* TABLE STYLING */
 .table {
   font-family: Arial, sans-serif;
@@ -23,8 +31,13 @@ th, td {
   text-align: left;
 }
 
+.display-data {
+  flex: 4;
+}
+
 /* TOOLBAR Styling - the toolbar contains the elements manipulating the data in the table  */
 .toolbar {
+  flex: 1;
   margin-left: 5%;
 }
 

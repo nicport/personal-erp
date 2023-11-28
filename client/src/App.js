@@ -126,37 +126,39 @@ const App = () => {
   const filteredTransactions = filterTransactionsByDate(transactions, startDate, endDate);
 
   return (
-    <div>
+    <>
       <Navbar />
-      <div className='toolbar'>
-        <div className='csv-upload'>
-          <CSVUpload onFileLoaded={handleCSVData} />
-        </div>
-        <div className='date-filter'>
-          <h6>Date Range Filter:</h6>
-          <div>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
+      <div className="main-container">
+        <aside className='toolbar'>
+          <div className='csv-upload'>
+            <CSVUpload onFileLoaded={handleCSVData} />
           </div>
-          <div>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
+          <div className='date-filter'>
+            <h6>Date Range Filter:</h6>
+            <div>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+            <div>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
+          </div>
+        </aside>
+        <div className='display-data'>
+          <div className='table'>
+            {error && <p>Error: {error}</p>} {/* display error message to user */}
+            <TransactionsTable data={filteredTransactions} columns={columns} />
           </div>
         </div>
       </div>
-      <div className='display-data'>
-        <div className='table'>
-          {error && <p>Error: {error}</p>} {/* display error message to user */}
-          <TransactionsTable data={filteredTransactions} columns={columns} />
-        </div>
-      </div>
-    </div>
+    </>
   );
 };
 
