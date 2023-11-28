@@ -27,18 +27,19 @@ table, th, td {
 }
 
 th, td {
-  padding: 15px;
+  padding-left: 15px;
   text-align: left;
 }
 
 .display-data {
-  flex: 4;
+  flex: 5;
 }
 
 /* TOOLBAR Styling - the toolbar contains the elements manipulating the data in the table  */
 .toolbar {
   flex: 1;
   margin-left: 5%;
+  margin-top: 25px;
 }
 
 /* CSV Upload Button Styling */
