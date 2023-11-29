@@ -2,7 +2,7 @@
 .main-container {
   display: flex; /* Enables Flexbox */
   flex-direction: row; /* Aligns children in a row */
-  align-items: start; /* Aligns items to the start of the flex container */
+  align-items: flex-start; /* Aligns items to the start of the flex container */
 }
 
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db/index.js');
-const { getAllTransactions, getTransaction, postTransaction, updateTransaction, deleteTransaction } = require('../db/dbUtils');
+const { getAllTransactions, getTransaction, postTransaction, updateTransaction, deleteTransaction, runQuery } = require('../db/dbUtils');
 
 // GET all transactions
 router.get('/', async (req, res) => {
@@ -13,6 +13,18 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// return COUNT of transactions
+router.get('/count', async (req, res) => {
+  const sql = 'SELECT COUNT(*) as count FROM transactions';
+  try {
+    const row = await runQuery(sql, []); 
+    console.log(row)
+    res.json({ count: row.count });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+})
 
 // GET a specific transaction by id
 router.get('/:id', async (req, res) => {
@@ -38,24 +50,42 @@ router.post('/', async (req, res) => {
 });
 
 // POST bulk transactions
-router.post('/bulk', (req, res) => {
+router.post('/bulk', async (req, res) => {
   const transactions = req.body.transactions;
   const sqlCheckDuplicate = `SELECT * FROM transactions WHERE date = ? AND description = ? AND amount = ?`;
   const sqlInsert = "INSERT INTO transactions (date, description, amount, type) VALUES (?, ?, ?, ?)";
 
-  db.serialize(() => {
-    db.run("BEGIN TRANSACTION");
-    const stmt = db.prepare(sql);
+  await db.serialize(async () => {
+    await db.run("BEGIN TRANSACTION");
 
-    transactions.forEach((transaction) => {
-      stmt.run([transaction.date, transaction.description, transaction.amount, null]);
-    });
+    for (const transaction of transactions) {
+      const duplicate = await new Promise((resolve, reject) => {
+        db.get(sqlCheckDuplicate, [transaction.date, transaction.description, transaction.amount], (err, row) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(row);
+          }
+        });
+      });
 
-    stmt.finalize();
-    db.run("COMMIT");
+      if (!duplicate) {
+        await new Promise((resolve, reject) => {
+          db.run(sqlInsert, [transaction.date, transaction.description, transaction.amount, transaction.type], (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          });
+        });
+      }
+    }
+
+    await db.run("COMMIT");
   });
 
-  res.json({ message: "Bulk transactions inserted successfully!" });
+  res.json({ message: "Bulk transactions processed successfully!" });
 });
 
 // PUT (update) a transaction

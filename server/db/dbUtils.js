@@ -61,10 +61,23 @@ const deleteTransaction = (sql, params) => {
   })
 }
 
+const runQuery = (sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    db.get(sql, params, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+};
+
 module.exports = {
   getAllTransactions,
   getTransaction,
   postTransaction,
   updateTransaction,
-  deleteTransaction
+  deleteTransaction,
+  runQuery
 };

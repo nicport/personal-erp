@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TransactionsTable from './TransactionsTable';
 import CSVUpload from './CSVUpload';
 import Navbar from './components/Navbar';
+import TransactionCount from './components/TransactionCount';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -52,7 +53,7 @@ const App = () => {
         ),
       },
     ],
-    []
+    [],
   );
 
   const handleCSVData = (parsedData) => {
@@ -152,6 +153,7 @@ const App = () => {
           </div>
         </aside>
         <div className='display-data'>
+          <TransactionCount />
           <div className='table'>
             {error && <p>Error: {error}</p>} {/* display error message to user */}
             <TransactionsTable data={filteredTransactions} columns={columns} />
