@@ -26,17 +26,6 @@ router.get('/count', async (req, res) => {
   }
 })
 
-// GET a specific transaction by id
-router.get('/:id', async (req, res) => {
-  const sql = `SELECT * FROM transactions WHERE id = ?`;
-  try {
-    const row = await getTransaction(sql, [req.params.id]);
-    res.json(row);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 // POST a new transaction
 router.post('/', async (req, res) => {
   const { date, description, amount, type } = req.body;
@@ -86,6 +75,18 @@ router.post('/bulk', async (req, res) => {
   });
 
   res.json({ message: "Bulk transactions processed successfully!" });
+});
+
+
+// GET a specific transaction by id
+router.get('/:id', async (req, res) => {
+  const sql = `SELECT * FROM transactions WHERE id = ?`;
+  try {
+    const row = await getTransaction(sql, [req.params.id]);
+    res.json(row);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // PUT (update) a transaction

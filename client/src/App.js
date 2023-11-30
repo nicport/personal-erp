@@ -11,7 +11,20 @@ const App = () => {
   const [error, setError] = useState(null); // add an error state
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [transactionCount, setTransactionCount] = useState(0); 
   const transactionTypes = ["Income", "Travel", "Food", "Entertainment", "Health & Fitness"];
+
+  const updateCount = () => {
+    // Fetch the new count and update state
+    fetch('http://localhost:5000/api/transactions/count')
+      .then(response => response.json())
+      .then(data => setTransactionCount(data.count))
+      .catch(error => console.error('Error fetching count:', error));
+  };
+
+  useEffect(() => {
+    updateCount();
+  }, []);
 
   const columns = React.useMemo(
     () => [
@@ -78,6 +91,7 @@ const App = () => {
     .then(data => {
       console.log(data.message);
       setTransactions(previousTransactions => [...previousTransactions, ...cleanedData]);
+      updateCount();
     })
     .catch(error => {
       setError(error.toString());
@@ -152,11 +166,11 @@ const App = () => {
             </div>
           </div>
         </aside>
+        <TransactionCount count={transactionCount}/>
         <div className='display-data'>
-          <TransactionCount />
           <div className='table'>
             {error && <p>Error: {error}</p>} {/* display error message to user */}
-            <TransactionsTable data={filteredTransactions} columns={columns} />
+            <TransactionsTable data={filteredTransactions} columns={columns} onTableChange={updateCount} />
           </div>
         </div>
       </div>
