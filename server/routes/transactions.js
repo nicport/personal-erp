@@ -19,7 +19,6 @@ router.get('/count', async (req, res) => {
   const sql = 'SELECT COUNT(*) as count FROM transactions';
   try {
     const row = await runQuery(sql, []); 
-    console.log(row)
     res.json({ count: row.count });
   } catch (err) {
     res.status(500).json({ error: err.message });

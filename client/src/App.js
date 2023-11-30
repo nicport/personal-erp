@@ -24,7 +24,7 @@ const App = () => {
 
   useEffect(() => {
     updateCount();
-  }, []);
+  }, [transactions]);
 
   const columns = React.useMemo(
     () => [
@@ -45,7 +45,7 @@ const App = () => {
         accessor: 'type',
         Cell: ({ row, value }) => (
           <select
-            value={value}
+            value={value || ''}
             onChange={(e) => handleTypeChange(e, row.index)}
           >
             {transactionTypes.map(type => (
@@ -69,34 +69,33 @@ const App = () => {
     [],
   );
 
-  const handleCSVData = (parsedData) => {
+  const handleCSVData = async (parsedData) => {
     const cleanedData = parsedData.map(entry => ({
       date: entry.Date,
       description: entry.Name,
       amount: entry.Amount
     }));
-    fetch('http://localhost:5000/api/transactions/bulk', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ transactions: cleanedData })
-    })
-    .then(response => {
+
+    try {
+      const response =  await fetch('http://localhost:5000/api/transactions/bulk', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ transactions: cleanedData })
+      });
+
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('There was an issue with the /bulk api')
       }
-      return response.json();
-    })
-    .then(data => {
-      console.log(data.message);
+
+      await response.json(); // wait for server to process request
       setTransactions(previousTransactions => [...previousTransactions, ...cleanedData]);
-      updateCount();
-    })
-    .catch(error => {
+    } catch (error) {
       setError(error.toString());
       console.error('Error posting transactions:', error);
-    });
+    }
+
   };
 
   const handleTypeChange = (event, rowIndex) => {
