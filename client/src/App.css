@@ -35,6 +35,10 @@ th, td {
   flex: 5;
 }
 
+.transaction-count {
+  text-align: center;
+}
+
 /* TOOLBAR Styling - the toolbar contains the elements manipulating the data in the table  */
 .toolbar {
   flex: 1;
