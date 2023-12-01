@@ -37,31 +37,19 @@ const postTransaction = (sql, params) => {
   })
 }
 
-const updateTransaction = (sql, params) => {
-  return new Promise((resolve, reject) => {
-    db.run(sql, [params], function (err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ changes: this.changes });
-      }
-    });
-  })
-}
-
-const deleteTransaction = (sql, params) => {
-  return new Promise((resolve, reject) => {
-    db.run(sql, [params], function (err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ changes: this.changes });
-      }
-    });
-  })
-}
-
 const runQuery = (sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+};
+
+const getQuery = (sql, params = []) => {
   return new Promise((resolve, reject) => {
     db.get(sql, params, (err, result) => {
       if (err) {
@@ -77,7 +65,6 @@ module.exports = {
   getAllTransactions,
   getTransaction,
   postTransaction,
-  updateTransaction,
-  deleteTransaction,
-  runQuery
+  runQuery,
+  getQuery
 };
