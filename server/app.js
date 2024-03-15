@@ -19,10 +19,12 @@ db.run(`DROP TABLE IF EXISTS transactions`, (err) => {
   // Create transactions table if not exists
   db.run(`CREATE TABLE IF NOT EXISTS transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    account TEXT,
     date DATE,
     description TEXT,
     amount REAL,
-    type TEXT
+    type TEXT,
+    category TEXT
   );`, (err) => {
     if (err) {
       // Handle error

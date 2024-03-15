@@ -41,7 +41,7 @@ router.post('/', async (req, res) => {
 router.post('/bulk', async (req, res) => {
   const transactions = req.body.transactions;
   const sqlCheckDuplicate = `SELECT * FROM transactions WHERE date = ? AND description = ? AND amount = ?`;
-  const sqlInsert = "INSERT INTO transactions (date, description, amount, type) VALUES (?, ?, ?, ?)";
+  const sqlInsert = "INSERT INTO transactions (date, description, amount, type, account, category) VALUES (?, ?, ?, ?, ?, ?)";
 
   await db.serialize(async () => {
     await db.run("BEGIN TRANSACTION");
@@ -59,7 +59,8 @@ router.post('/bulk', async (req, res) => {
 
       if (!duplicate) {
         await new Promise((resolve, reject) => {
-          db.run(sqlInsert, [transaction.date, transaction.description, transaction.amount, transaction.type], (err) => {
+          db.run(sqlInsert, [transaction.date, transaction.description, transaction.amount, transaction.type,
+          transaction.account, transaction.category], (err) => {
             if (err) {
               reject(err);
             } else {
@@ -110,5 +111,7 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
 
 module.exports = router;
