@@ -3,6 +3,7 @@ import TransactionsTable from './TransactionsTable';
 import CSVUpload from './CSVUpload';
 import Navbar from './components/Navbar';
 import TransactionCount from './components/TransactionCount';
+import CashFlow from './components/CashFlow';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -12,7 +13,6 @@ const App = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [transactionCount, setTransactionCount] = useState(0); 
-  const transactionTypes = ["Income", "Travel", "Food", "Entertainment", "Health & Fitness"];
 
   const updateCount = () => {
     // Fetch the new count and update state
@@ -33,26 +33,24 @@ const App = () => {
         accessor: 'date',
       },
       {
+        Header: 'Account',
+        accessor: 'account',
+      },
+      {
         Header: 'Description',
         accessor: 'description',
+      },
+      {
+        Header: 'Type',
+        accessor: 'type',
       },
       {
         Header: 'Amount',
         accessor: 'amount',
       },
       {
-        Header: 'Type',
-        accessor: 'type',
-        Cell: ({ row, value }) => (
-          <select
-            value={value || ''}
-            onChange={(e) => handleTypeChange(e, row.index)}
-          >
-            {transactionTypes.map(type => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
-        ),
+        Header: 'Category',
+        accessor: 'category',
       },
       {
         Header: 'Tags',
@@ -73,7 +71,10 @@ const App = () => {
     const cleanedData = parsedData.map(entry => ({
       date: entry.Date,
       description: entry.Name,
-      amount: entry.Amount
+      type: entry.Type !== "" ? entry.Type : (entry.Amount > 0 ? "Income" : "Expense"),
+      amount: entry.Amount,
+      account: entry.Account,
+      category: entry.Category
     }));
 
     try {
@@ -96,14 +97,6 @@ const App = () => {
       console.error('Error posting transactions:', error);
     }
 
-  };
-
-  const handleTypeChange = (event, rowIndex) => {
-    setTransactions(transactions =>
-      transactions.map((transaction, index) =>
-        index === rowIndex ? { ...transaction, type: event.target.value } : transaction
-      )
-    );
   };
 
   const handleTagsChange = (event, rowIndex) => {
@@ -142,37 +135,43 @@ const App = () => {
   return (
     <>
       <Navbar />
-      <div className="main-container">
-        <aside className='toolbar'>
-          <div className='csv-upload'>
-            <CSVUpload onFileLoaded={handleCSVData} />
-          </div>
-          <div className='date-filter'>
-            <h6>Date Range Filter:</h6>
-            <div>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
+      <div className='container-fluid'>
+        <div className='row'>
+          <div className='col-4'>
+            <div className='csv-upload'>
+              <CSVUpload onFileLoaded={handleCSVData} />
             </div>
-            <div>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
+            <div className='date-filter'>
+              <h6>Date Range Filter:</h6>
+              <div>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
+              <div>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
             </div>
+            <CashFlow />
           </div>
-        </aside>
-        <TransactionCount count={transactionCount}/>
-        <div className='display-data'>
-          <div className='table'>
-            {error && <p>Error: {error}</p>} {/* display error message to user */}
-            <TransactionsTable data={filteredTransactions} columns={columns} onTableChange={updateCount} />
+
+          <div className='col-8'>
+            <TransactionCount count={transactionCount}/>
+            <div className='table'>
+              {error && <p>Error: {error}</p>} {/* display error message to user */}
+              <TransactionsTable data={filteredTransactions} columns={columns} onTableChange={updateCount} />
+            </div>
           </div>
         </div>
       </div>
+
+        
     </>
   );
 };
