@@ -25,6 +25,33 @@ router.get('/count', async (req, res) => {
   }
 })
 
+// GET all transactions from the current month
+// WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now')
+router.get('/income', async (req, res) => {
+  const sql = `SELECT SUM(amount) AS total_amount FROM transactions`;
+  try {
+    const row = await getQuery(sql, []);
+    res.json(row);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/monthlycashflow', async (req, res) => {
+  const sql = `SELECT 
+    SUM(CASE WHEN type = 'Income' THEN amount ELSE 0 END) AS total_income,
+    SUM(CASE WHEN type = 'Expense' THEN amount ELSE 0 END) AS total_expense
+  FROM transactions
+  WHERE strftime('%Y/%m', date) = strftime('%Y/%m', 'now');`
+  try {
+    const result = await getQuery(sql, []);
+    console.log(result);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({error: err.message});
+  }
+})
+
 // POST a new transaction
 router.post('/', async (req, res) => {
   const { date, description, amount, type } = req.body;
@@ -56,7 +83,7 @@ router.post('/bulk', async (req, res) => {
           }
         });
       });
-
+      // Check if transaction is a duplicate before committing to db - this will allow overlap in uploaded csvs without duplicates
       if (!duplicate) {
         await new Promise((resolve, reject) => {
           db.run(sqlInsert, [transaction.date, transaction.description, transaction.amount, transaction.type,
@@ -111,7 +138,5 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-
 
 module.exports = router;
