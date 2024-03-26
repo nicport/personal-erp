@@ -5,7 +5,7 @@ const { getAllTransactions, getTransaction, postTransaction, runQuery, getQuery 
 
 // GET all transactions
 router.get('/', async (req, res) => {
-  const sql = 'SELECT * FROM transactions';
+  const sql = 'SELECT * FROM transactions ORDER BY date ASC';
   try {
     const rows = await getAllTransactions(sql, []);
     res.json(rows);
@@ -45,7 +45,6 @@ router.get('/monthlycashflow', async (req, res) => {
   WHERE strftime('%Y/%m', date) = strftime('%Y/%m', 'now');`
   try {
     const result = await getQuery(sql, []);
-    console.log(result);
     res.json(result);
   } catch (err) {
     res.status(500).json({error: err.message});
