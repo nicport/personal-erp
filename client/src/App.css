@@ -5,6 +5,7 @@
 /* TABLE STYLING */
 .table {
   font-family: Arial, sans-serif;
+  font-size: small;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   border-radius: 5px;
