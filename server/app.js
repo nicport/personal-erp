@@ -9,6 +9,7 @@ const port = 5000;
 app.use(cors());
 app.use(express.json());
 
+// FOR DEVELOPMENT
 db.run(`DROP TABLE IF EXISTS transactions`, (err) => {
   if (err) {
     // Handle error
@@ -24,7 +25,8 @@ db.run(`DROP TABLE IF EXISTS transactions`, (err) => {
     description TEXT,
     amount REAL,
     type TEXT,
-    category TEXT
+    category TEXT,
+    UNIQUE(date, description, amount, account)
   );`, (err) => {
     if (err) {
       // Handle error
@@ -34,7 +36,8 @@ db.run(`DROP TABLE IF EXISTS transactions`, (err) => {
 });
 
 app.use('/api/transactions', transactionsRoutes);
-app.use('/api/tasks', tasksRoutes);
+// TO BE IMPLEMENTED
+//app.use('/api/tasks', tasksRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
