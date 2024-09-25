@@ -7,7 +7,7 @@ const { getAllTransactions, getTransaction, postTransaction, runQuery, getQuery 
 router.get('/', async (req, res) => {
   const sql = 'SELECT * FROM transactions ORDER BY date ASC';
   try {
-    const rows = await getAllTransactions(sql, []);
+    const rows = await getAllTransactions(sql);
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -53,11 +53,18 @@ router.get('/monthlycashflow', async (req, res) => {
 
 // POST a new transaction
 router.post('/', async (req, res) => {
-  const { date, description, amount, type } = req.body;
-  const sql = `INSERT INTO transactions (date, description, amount, type) VALUES (?, ?, ?, ?)`;
+  const transactions = Array.isArray(req.body) ? req.body : [req.body];
+  //const { date, description, amount, type } = req.body;
+  const sql = `INSERT INTO transactions (date, description, amount, type, categoryaccount,) VALUES (?, ?, ?, ?, ?, ?)`;
 
   try {
-    res.json(await postTransaction(sql, [date, description, amount, type]));
+    db.run('BEGIN TRANSACTION');
+    for (const transaction of transactions) {
+      const { date, description, amount, type, category, account } = transaction;
+      db.run(sql, [date, description, amount, type, category, account]);
+    }
+    db.run('COMMIT');
+    res.status(201).json({ message: 'Transactions created successfully' })
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
