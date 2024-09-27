@@ -55,7 +55,7 @@ router.get('/monthlycashflow', async (req, res) => {
 router.post('/', async (req, res) => {
   const transactions = Array.isArray(req.body) ? req.body : [req.body];
   //const { date, description, amount, type } = req.body;
-  const sql = `INSERT INTO transactions (date, description, amount, type, categoryaccount,) VALUES (?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT or IGNORE INTO transactions (date, description, amount, type, category, account) VALUES (?, ?, ?, ?, ?, ?)`;
 
   try {
     db.run('BEGIN TRANSACTION');
@@ -66,48 +66,9 @@ router.post('/', async (req, res) => {
     db.run('COMMIT');
     res.status(201).json({ message: 'Transactions created successfully' })
   } catch (err) {
+    console.log(err.message.code);
     res.status(500).json({ error: err.message });
   }
-});
-
-// POST bulk transactions
-router.post('/bulk', async (req, res) => {
-  const transactions = req.body.transactions;
-  const sqlCheckDuplicate = `SELECT * FROM transactions WHERE date = ? AND description = ? AND amount = ?`;
-  const sqlInsert = "INSERT INTO transactions (date, description, amount, type, account, category) VALUES (?, ?, ?, ?, ?, ?)";
-
-  await db.serialize(async () => {
-    await db.run("BEGIN TRANSACTION");
-
-    for (const transaction of transactions) {
-      const duplicate = await new Promise((resolve, reject) => {
-        db.get(sqlCheckDuplicate, [transaction.date, transaction.description, transaction.amount], (err, row) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(row);
-          }
-        });
-      });
-      // Check if transaction is a duplicate before committing to db - this will allow overlap in uploaded csvs without duplicates
-      if (!duplicate) {
-        await new Promise((resolve, reject) => {
-          db.run(sqlInsert, [transaction.date, transaction.description, transaction.amount, transaction.type,
-          transaction.account, transaction.category], (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          });
-        });
-      }
-    }
-
-    await db.run("COMMIT");
-  });
-
-  res.json({ message: "Bulk transactions processed successfully!" });
 });
 
 
